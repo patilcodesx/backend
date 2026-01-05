@@ -19,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
         this.jwtUtil = jwtUtil;
     }
 
+    // ✅ INTERCEPTOR (JWT)
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(
@@ -27,9 +28,24 @@ public class WebConfig implements WebMvcConfigurer {
         .addPathPatterns("/api/**")
         .excludePathPatterns(
                 "/api/auth/**",
+                "/api/share/**",
                 "/error",
-                "/actuator/**",
-                "/api/share/**"
+                "/actuator/**"
         );
+    }
+
+    // ✅ CORS CONFIG (THIS FIXES YOUR ISSUE)
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(
+                        "https://securevault-psi.vercel.app"
+                )
+                .allowedMethods(
+                        "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+                )
+                .allowedHeaders("*")
+                .exposedHeaders("*")
+                .allowCredentials(true);
     }
 }
