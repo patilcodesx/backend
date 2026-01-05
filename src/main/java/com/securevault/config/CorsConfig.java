@@ -19,7 +19,7 @@ public class CorsConfig {
 
         // FIXED ✔ No more "*"
         cors.setAllowedOriginPatterns(Arrays.asList(
-                "http://localhost:*",
+                "https://securevault-psi.vercel.app",
                 "http://127.0.0.1:*"
         ));
 
