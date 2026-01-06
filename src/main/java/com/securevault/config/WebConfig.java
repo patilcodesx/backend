@@ -36,16 +36,18 @@ public class WebConfig implements WebMvcConfigurer {
         );
     }
 
-    // ✅ SINGLE, CORRECT CORS CONFIG (NO *)
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins(
-                        "https://securevault-psi.vercel.app"
-                )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-                .allowedHeaders("*")
-                .exposedHeaders("*")
-                .allowCredentials(true);
-    }
+   @Override
+public void addCorsMappings(CorsRegistry registry) {
+    registry.addMapping("/**")
+            .allowedOriginPatterns(
+                    "https://securevault*.vercel.app"
+            )
+            .allowedMethods(
+                    "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+            )
+            .allowedHeaders("*")
+            .exposedHeaders("*")
+            .allowCredentials(true);
+}
+
 }
