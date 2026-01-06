@@ -1,11 +1,9 @@
 package com.securevault.config;
 
 import com.securevault.model.User;
-import com.securevault.model.Session;
 import com.securevault.service.SessionService;
 import com.securevault.service.UserService;
 import com.securevault.util.JwtUtil;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -31,14 +29,18 @@ public class TokenInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
-        // Allow CORS preflight
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
+        // ✅ Allow CORS preflight
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
 
-        // Allow auth-related endpoints
+        // ✅ Allow auth APIs
         String uri = request.getRequestURI();
-        if (uri.startsWith("/api/auth")) return true;
+        if (uri.startsWith("/api/auth")) {
+            return true;
+        }
 
-        // Extract and validate JWT
+        // 🔐 JWT REQUIRED
         String auth = request.getHeader("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {
             return reject(response, "Missing token");
@@ -50,7 +52,6 @@ public class TokenInterceptor implements HandlerInterceptor {
             return reject(response, "Invalid or expired token");
         }
 
-        // Extract email from token
         String email = jwtUtil.getEmailFromToken(token);
         Optional<User> userOpt = userService.findByEmail(email);
 
@@ -58,11 +59,11 @@ public class TokenInterceptor implements HandlerInterceptor {
             return reject(response, "User not found");
         }
 
-        // Attach current user to request
+        // Attach user to request
         User user = userOpt.get();
         request.setAttribute("currentUser", user);
 
-        // Update session last active (matching JWT stored at login time)
+        // Refresh session activity
         sessionService.findByToken(token)
                 .ifPresent(sessionService::refreshLastActive);
 
@@ -72,7 +73,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     private boolean reject(HttpServletResponse res, String msg) throws Exception {
         res.setStatus(401);
         res.setContentType("application/json");
-        res.getWriter().write("{\"message\":\"" + msg + "\"}");
+        res.getWriter().write("{\"success\":false,\"message\":\"" + msg + "\"}");
         return false;
     }
 }
