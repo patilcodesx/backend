@@ -13,13 +13,15 @@ public class WebConfig implements WebMvcConfigurer {
     private final SessionService sessionService;
     private final JwtUtil jwtUtil;
 
-    public WebConfig(UserService userService, SessionService sessionService, JwtUtil jwtUtil) {
+    public WebConfig(UserService userService,
+                     SessionService sessionService,
+                     JwtUtil jwtUtil) {
         this.userService = userService;
         this.sessionService = sessionService;
         this.jwtUtil = jwtUtil;
     }
 
-    // ✅ INTERCEPTOR (JWT)
+    // ✅ JWT INTERCEPTOR
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(
@@ -34,16 +36,14 @@ public class WebConfig implements WebMvcConfigurer {
         );
     }
 
-    // ✅ CORS CONFIG (THIS FIXES YOUR ISSUE)
+    // ✅ SINGLE, CORRECT CORS CONFIG (NO *)
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "https://securevault-psi.vercel.app"
                 )
-                .allowedMethods(
-                        "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
-                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("*")
                 .allowCredentials(true);
